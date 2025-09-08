@@ -92,7 +92,7 @@ pg_close($conn);
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             font-family: 'Kanit', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -146,12 +146,12 @@ pg_close($conn);
         }
         
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
         
         .btn-register {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             border: none;
             border-radius: 10px;
             padding: 12px 30px;
@@ -163,7 +163,7 @@ pg_close($conn);
         
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
             color: white;
         }
         
@@ -179,7 +179,7 @@ pg_close($conn);
         }
         
         .login-link a {
-            color: #667eea;
+            color: #dc3545;
             text-decoration: none;
             font-weight: 500;
         }
