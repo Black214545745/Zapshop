@@ -5,8 +5,7 @@ FROM php:8.1-apache
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
-    && docker-php-ext-install pdo pdo_pgsql \
-    && docker-php-ext-enable pdo_pgsql
+    && docker-php-ext-install pdo pdo_pgsql pgsql
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -21,9 +20,8 @@ COPY . /var/www/html/
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 
-# Create PHP configuration
-RUN echo "extension=pdo_pgsql.so" > /usr/local/etc/php/conf.d/pdo_pgsql.ini
-RUN echo "extension=pgsql.so" > /usr/local/etc/php/conf.d/pgsql.ini
+# Verify PostgreSQL extensions are installed
+RUN php -m | grep -i pgsql
 
 # Expose port 80
 EXPOSE 80
