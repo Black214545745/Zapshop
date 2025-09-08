@@ -1,7 +1,7 @@
 <?php
 session_start();
 // ตรวจสอบว่าผู้ใช้เข้าสู่ระบบแล้วหรือไม่
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) && !isset($_SESSION['username'])) {
     header("Location: user-login.php");
     exit();
 }
@@ -9,17 +9,40 @@ if (!isset($_SESSION['user_id'])) {
 include 'config.php';
 
 // ดึงข้อมูลผู้ใช้
-$user_id = $_SESSION['user_id'];
 $conn = getConnection();
-$query = "SELECT * FROM users WHERE id = $1";
-$result = pg_query_params($conn, $query, [$user_id]);
+$user = null;
 
-if ($result && pg_num_rows($result) > 0) {
-    $user = pg_fetch_assoc($result);
-} else {
+// ลองดึงข้อมูลจาก user_id ก่อน
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $query = "SELECT * FROM users WHERE id = $1";
+    $result = pg_query_params($conn, $query, [$user_id]);
+    
+    if ($result && pg_num_rows($result) > 0) {
+        $user = pg_fetch_assoc($result);
+    }
+}
+
+// ถ้าไม่มี user_id หรือไม่พบข้อมูล ลองใช้ username
+if (!$user && isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+    $query = "SELECT * FROM users WHERE username = $1";
+    $result = pg_query_params($conn, $query, [$username]);
+    
+    if ($result && pg_num_rows($result) > 0) {
+        $user = pg_fetch_assoc($result);
+        // อัปเดต session ให้มี user_id
+        $_SESSION['user_id'] = $user['id'];
+    }
+}
+
+// ถ้ายังไม่พบข้อมูล ให้ redirect ไปหน้า login
+if (!$user) {
     header("Location: user-login.php");
     exit();
 }
+
+$user_id = $user['id'];
 
 // จัดการการอัปเดตข้อมูล
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

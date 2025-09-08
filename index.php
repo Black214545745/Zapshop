@@ -35,7 +35,7 @@ if (isset($_SESSION['user_id'])) {
     
     <!-- Custom Styles -->
     <style>
-        /* ===== NAVIGATION ===== */
+        /* ===== HERO SECTION ===== */
         .custom-navbar {
             background-color: #e53e3e !important;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -846,61 +846,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top custom-navbar">
-        <div class="container">
-            <!-- Brand Logo -->
-            <a class="navbar-brand" href="index.php">
-                <div class="brand-logo">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <span class="brand-text">ZapShop</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Navigation Buttons -->
-                <div class="nav-buttons">
-                    <a href="index.php" class="nav-btn active">
-                        <i class="fas fa-home"></i>
-                        <span>หน้าแรก</span>
-                    </a>
-                    <a href="product-list1.php" class="nav-btn">
-                        <i class="fas fa-box"></i>
-                        <span>สินค้าทั้งหมด</span>
-                    </a>
-                    <a href="cart.php" class="nav-btn">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>ตะกร้า</span>
-                        <?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
-                            <span class="cart-badge"><?php echo count($_SESSION['cart']); ?></span>
-                        <?php endif; ?>
-                    </a>
-                </div>
-                
-                <!-- User Section -->
-                <div class="user-section">
-                    <?php if (isset($_SESSION['username'])): ?>
-                        <div class="user-info">
-                            <i class="fas fa-user"></i>
-                            <span>สวัสดี, สหภาพ อ่อนจันทร์</span>
-                        </div>
-                        <div class="menu-btn">
-                            <i class="fas fa-bars"></i>
-                            <span>เมนู</span>
-                        </div>
-                    <?php else: ?>
-                        <a href="user-login.php" class="login-btn">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>เข้าสู่ระบบ</span>
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php include 'include/menu.php'; ?>
 
     <!-- Hero Section -->
     <section class="hero-section">

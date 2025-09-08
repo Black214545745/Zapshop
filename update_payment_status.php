@@ -1,91 +1,80 @@
 <?php
-/**
- * Update Payment Status API
- * อัปเดตสถานะการชำระเงิน
- */
-
+session_start();
 require_once 'config.php';
-require_once 'payment_handler.php';
 
-// ตั้งค่า header
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
-
-// ตรวจสอบว่าเป็นการส่งข้อมูลด้วย POST
+// ตรวจสอบว่าเป็น POST request
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed']);
-    exit;
+    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    exit();
 }
 
-// รับข้อมูล JSON
-$input = json_decode(file_get_contents('php://input'), true);
+// รับข้อมูล
+$order_id = $_POST['order_id'] ?? '';
+$status = $_POST['status'] ?? '';
 
-// ตรวจสอบข้อมูลที่จำเป็น
-if (!isset($input['payment_id']) || !isset($input['status'])) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Missing required parameters: payment_id and status']);
-    exit;
-}
-
-$paymentId = intval($input['payment_id']);
-$status = $input['status'];
-
-// ตรวจสอบความถูกต้องของสถานะ
-$validStatuses = ['pending', 'processing', 'completed', 'failed', 'cancelled'];
-if (!in_array($status, $validStatuses)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Invalid status. Must be one of: ' . implode(', ', $validStatuses)]);
-    exit;
+if (empty($order_id) || empty($status)) {
+    echo json_encode(['success' => false, 'message' => 'ข้อมูลไม่ครบถ้วน']);
+    exit();
 }
 
 try {
-    // อัปเดตสถานะการชำระเงิน
-    $result = updatePaymentStatus($paymentId, $status);
+    $conn = getConnection();
     
-    if ($result['success']) {
-        // ดึงข้อมูลการชำระเงินเพื่อส่งกลับ
-        $paymentData = getPayment($paymentId);
-        
-        if ($paymentData['success']) {
-            $response = [
-                'success' => true,
-                'message' => $result['message'],
-                'data' => [
-                    'payment_id' => $paymentId,
-                    'status' => $status,
-                    'updated_at' => date('Y-m-d H:i:s'),
-                    'payment_details' => $paymentData['data']
-                ]
-            ];
-        } else {
-            $response = [
-                'success' => true,
-                'message' => $result['message'],
-                'data' => [
-                    'payment_id' => $paymentId,
-                    'status' => $status,
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]
-            ];
-        }
-        
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
-    } else {
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => $result['message']
-        ], JSON_UNESCAPED_UNICODE);
+    // เริ่ม Transaction
+    pg_query($conn, "BEGIN");
+    
+    // อัปเดตสถานะ order
+    $updateOrderQuery = "UPDATE orders SET status = $1 WHERE id = $2";
+    $updateOrderResult = pg_query_params($conn, $updateOrderQuery, [$status === 'paid' ? 'completed' : 'pending', $order_id]);
+    
+    if (!$updateOrderResult) {
+        throw new Exception('ไม่สามารถอัปเดตสถานะ order ได้: ' . pg_last_error($conn));
     }
     
+    // สร้างหรืออัปเดต payment record
+    $checkPaymentQuery = "SELECT id FROM payments WHERE order_id = $1";
+    $checkPaymentResult = pg_query_params($conn, $checkPaymentQuery, [$order_id]);
+    
+    if ($checkPaymentResult && pg_num_rows($checkPaymentResult) > 0) {
+        // อัปเดต payment ที่มีอยู่
+        $updatePaymentQuery = "UPDATE payments SET payment_status = $1, payment_date = NOW() WHERE order_id = $2";
+        $updatePaymentResult = pg_query_params($conn, $updatePaymentQuery, [$status, $order_id]);
+        
+        if (!$updatePaymentResult) {
+            throw new Exception('ไม่สามารถอัปเดตสถานะ payment ได้: ' . pg_last_error($conn));
+        }
+    } else {
+        // สร้าง payment record ใหม่
+        $insertPaymentQuery = "INSERT INTO payments (order_id, payment_method, payment_status, payment_date, amount) 
+                              SELECT id, payment_method, $1, NOW(), grand_total FROM orders WHERE id = $2";
+        $insertPaymentResult = pg_query_params($conn, $insertPaymentQuery, [$status, $order_id]);
+        
+        if (!$insertPaymentResult) {
+            throw new Exception('ไม่สามารถสร้าง payment record ได้: ' . pg_last_error($conn));
+        }
+    }
+    
+    // Commit Transaction
+    pg_query($conn, "COMMIT");
+    
+    pg_close($conn);
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'อัปเดตสถานะการชำระเงินเรียบร้อยแล้ว'
+    ]);
+    
 } catch (Exception $e) {
-    http_response_code(500);
+    // Rollback Transaction
+    if (isset($conn)) {
+        pg_query($conn, "ROLLBACK");
+        pg_close($conn);
+    }
+    
     echo json_encode([
         'success' => false,
-        'error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
+        'message' => $e->getMessage()
+    ]);
 }
 ?>

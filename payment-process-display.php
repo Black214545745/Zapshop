@@ -604,12 +604,23 @@ $bankAccounts = [
                         <?php if ($payment_method === 'promptpay'): ?>
                         <div class="qr-code-container">
                             <div class="qr-code">
-                                <img src="<?php echo $qrCodeImage; ?>" alt="QR Code สำหรับชำระเงิน" style="width: 180px; height: 180px; border-radius: 8px;">
+                                <img src="<?php echo $qrCodeImage; ?>" alt="QR Code สำหรับชำระเงิน" style="width: 250px; height: 250px; border-radius: 8px;">
                             </div>
                             <p class="qr-code-placeholder">QR Code สำหรับชำระเงิน</p>
                             <div class="payment-amount-notice" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin-top: 15px; text-align: center;">
                                 <i class="fas fa-exclamation-triangle" style="color: #856404; margin-right: 8px;"></i>
                                 <strong style="color: #856404;">กรุณากรอกจำนวนเงิน: ฿<?php echo number_format($order['grand_total'], 2); ?></strong>
+                            </div>
+                            
+                            <!-- ปุ่มยืนยันการชำระเงิน -->
+                            <div class="payment-confirmation" style="margin-top: 20px; text-align: center;">
+                                <div class="alert alert-success" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                                    <strong>สแกน QR Code เสร็จแล้ว?</strong>
+                                </div>
+                                <button class="btn btn-success btn-lg" onclick="completePayment()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none; padding: 15px 30px; border-radius: 8px; color: white; font-weight: 600; font-size: 1.1rem;">
+                                    <i class="fas fa-check"></i> ยืนยันการชำระเงินเสร็จสิ้น
+                                </button>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -718,12 +729,14 @@ $bankAccounts = [
     </div>
     
     <div class="action-buttons">
+        <?php if ($payment_method !== 'promptpay'): ?>
         <button class="btn-action btn-success" onclick="confirmPayment()">
             <i class="fas fa-check"></i> ยืนยันการชำระเงิน
         </button>
         <a href="payment-methods.php" class="btn-action btn-warning">
             <i class="fas fa-arrow-left"></i> เปลี่ยนวิธีการชำระเงิน
         </a>
+        <?php endif; ?>
         <a href="product-list1.php" class="btn-action btn-primary">
             <i class="fas fa-shopping-bag"></i> ช้อปปิ้งต่อ
         </a>
@@ -756,6 +769,34 @@ function confirmPayment() {
     if (confirm('คุณได้ชำระเงินเรียบร้อยแล้วหรือไม่?')) {
         // ส่งข้อมูลไปยังหน้า success
         window.location.href = 'checkout-success.php?order_id=<?php echo $order_id; ?>';
+    }
+}
+
+// ฟังก์ชันสำหรับ QR Code Payment - จบขั้นตอนทันที
+function completePayment() {
+    if (confirm('คุณได้สแกน QR Code และชำระเงินเรียบร้อยแล้วหรือไม่?')) {
+        // อัปเดตสถานะการชำระเงินในฐานข้อมูล
+        fetch('update_payment_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'order_id=<?php echo $order_id; ?>&status=paid'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // ไปหน้า success
+                window.location.href = 'checkout-success.php?order_id=<?php echo $order_id; ?>&payment_completed=true';
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // ไปหน้า success แม้ว่าจะมี error
+            window.location.href = 'checkout-success.php?order_id=<?php echo $order_id; ?>&payment_completed=true';
+        });
     }
 }
 

@@ -258,6 +258,37 @@ pg_close($conn);
             color: var(--makro-red);
         }
 
+        .shipping-address-section {
+            background: white;
+            border-radius: var(--makro-radius);
+            box-shadow: var(--makro-shadow);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--makro-border);
+            border-radius: var(--makro-radius-sm);
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--makro-red);
+            box-shadow: 0 0 0 0.2rem rgba(227, 24, 55, 0.25);
+        }
+
+        .text-danger {
+            color: var(--makro-red) !important;
+        }
+
         .terms-section {
             background: white;
             border-radius: var(--makro-radius);
@@ -407,7 +438,67 @@ pg_close($conn);
                             QR พร้อมเพย์
                         </div>
                     </div>
+                    
                 </div>
+            </div>
+            
+            <!-- ฟอร์มกรอกที่อยู่จัดส่ง -->
+            <div class="shipping-address-section">
+                <h3 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i> ที่อยู่จัดส่ง
+                </h3>
+                
+                <form id="shippingAddressForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">ที่อยู่ <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required placeholder="บ้านเลขที่ หมู่ ซอย ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="province" class="form-label">จังหวัด <span class="text-danger">*</span></label>
+                                <select class="form-select" id="province" name="province" required>
+                                    <option value="">เลือกจังหวัด</option>
+                                    <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                                    <option value="เชียงใหม่">เชียงใหม่</option>
+                                    <option value="เชียงราย">เชียงราย</option>
+                                    <option value="นครปฐม">นครปฐม</option>
+                                    <option value="ปทุมธานี">ปทุมธานี</option>
+                                    <option value="สมุทรปราการ">สมุทรปราการ</option>
+                                    <option value="นนทบุรี">นนทบุรี</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="postal_code" class="form-label">รหัสไปรษณีย์ <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code" required pattern="[0-9]{5}" placeholder="12345">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="delivery_notes" class="form-label">หมายเหตุการจัดส่ง</label>
+                        <textarea class="form-control" id="delivery_notes" name="delivery_notes" rows="2" placeholder="เช่น อยู่บ้านหลังร้าน, ฝากไว้กับคนเฝ้าบ้าน"></textarea>
+                    </div>
+                </form>
             </div>
             
             <div class="terms-section">
@@ -478,6 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedMethodText.textContent = methodName;
             selectedMethodDisplay.classList.add('show');
             
+            
             // เปิดใช้งานปุ่มสั่งสินค้า
             checkoutButton.disabled = false;
         });
@@ -490,11 +582,42 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // ตรวจสอบฟอร์มที่อยู่จัดส่ง
+        const shippingForm = document.getElementById('shippingAddressForm');
+        const formData = new FormData(shippingForm);
+        
+        // ตรวจสอบฟิลด์ที่จำเป็น
+        const requiredFields = ['full_name', 'phone', 'address', 'province', 'postal_code'];
+        let isValid = true;
+        let missingFields = [];
+        
+        requiredFields.forEach(field => {
+            const value = formData.get(field);
+            if (!value || value.trim() === '') {
+                isValid = false;
+                missingFields.push(field);
+            }
+        });
+        
+        if (!isValid) {
+            alert('กรุณากรอกข้อมูลที่อยู่จัดส่งให้ครบถ้วน');
+            // Highlight missing fields
+            missingFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) {
+                    element.style.borderColor = 'var(--makro-red)';
+                    element.focus();
+                }
+            });
+            return;
+        }
+        
         // ส่งข้อมูลไปหน้า checkout
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'checkout.php';
         
+        // เพิ่มข้อมูล payment method และ grand total
         const paymentMethodInput = document.createElement('input');
         paymentMethodInput.type = 'hidden';
         paymentMethodInput.name = 'payment_method';
@@ -507,6 +630,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         form.appendChild(paymentMethodInput);
         form.appendChild(grandTotalInput);
+        
+        // เพิ่มข้อมูลที่อยู่จัดส่ง
+        for (let [key, value] of formData.entries()) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'shipping_' + key;
+            input.value = value;
+            form.appendChild(input);
+        }
+        
         document.body.appendChild(form);
         form.submit();
     });

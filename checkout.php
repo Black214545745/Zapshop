@@ -23,6 +23,16 @@ if (!isset($_POST['payment_method']) || !isset($_POST['grand_total'])) {
 $paymentMethod = $_POST['payment_method'];
 $grandTotal = floatval($_POST['grand_total']);
 
+// รับข้อมูลที่อยู่จัดส่ง
+$shippingData = [
+    'full_name' => $_POST['shipping_full_name'] ?? '',
+    'phone' => $_POST['shipping_phone'] ?? '',
+    'address' => $_POST['shipping_address'] ?? '',
+    'province' => $_POST['shipping_province'] ?? '',
+    'postal_code' => $_POST['shipping_postal_code'] ?? '',
+    'delivery_notes' => $_POST['shipping_delivery_notes'] ?? ''
+];
+
 $conn = getConnection();
 $user_id = $_SESSION['user_id'];
 $totalAmount = 0;
@@ -73,7 +83,7 @@ try {
         $userData = pg_fetch_assoc($userResult);
     } else {
         // ถ้าไม่มีใน user_profiles ลองดึงจาก customers
-        $customerQuery = "SELECT first_name || ' ' || last_name as full_name, email, phone, address FROM customers WHERE id = $1";
+        $customerQuery = "SELECT first_name || ' ' || last_name as full_name, email, phone, '' as address FROM customers WHERE id = $1";
         $customerResult = pg_query_params($conn, $customerQuery, [$user_id]);
         if ($customerResult && pg_num_rows($customerResult) > 0) {
             $userData = pg_fetch_assoc($customerResult);
@@ -97,6 +107,26 @@ try {
         ];
     }
     
+    // ใช้ข้อมูลที่อยู่จัดส่งที่ลูกค้ากรอก (ถ้ามี) หรือใช้ข้อมูลจากฐานข้อมูล
+    $finalShippingData = [
+        'full_name' => !empty($shippingData['full_name']) ? $shippingData['full_name'] : $userData['full_name'],
+        'phone' => !empty($shippingData['phone']) ? $shippingData['phone'] : $userData['phone'],
+        'email' => $userData['email'],
+        'address' => !empty($shippingData['address']) ? $shippingData['address'] : $userData['address']
+    ];
+    
+    // รวมข้อมูลที่อยู่จัดส่งทั้งหมด
+    $fullAddress = $finalShippingData['address'];
+    if (!empty($shippingData['province'])) {
+        $fullAddress .= ', ' . $shippingData['province'];
+    }
+    if (!empty($shippingData['postal_code'])) {
+        $fullAddress .= ' ' . $shippingData['postal_code'];
+    }
+    if (!empty($shippingData['delivery_notes'])) {
+        $fullAddress .= ' (หมายเหตุ: ' . $shippingData['delivery_notes'] . ')';
+    }
+    
     // สร้าง record ใน orders (ใช้โครงสร้าง UUID ที่ถูกต้อง)
     $orderQuery = "INSERT INTO orders (id, user_id, fullname, tel, email, address, grand_total, payment_method, order_date, status) 
                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), 'pending')";
@@ -104,10 +134,10 @@ try {
     $orderParams = [
         $order_id,
         $user_id,
-        $userData['full_name'] ?? 'ไม่ระบุชื่อ',
-        $userData['phone'] ?? 'ไม่ระบุเบอร์โทร',
-        $userData['email'] ?? 'ไม่ระบุอีเมล',
-        $userData['address'] ?? 'ไม่ระบุที่อยู่',
+        $finalShippingData['full_name'] ?? 'ไม่ระบุชื่อ',
+        $finalShippingData['phone'] ?? 'ไม่ระบุเบอร์โทร',
+        $finalShippingData['email'] ?? 'ไม่ระบุอีเมล',
+        $fullAddress, // ใช้ที่อยู่จัดส่งที่รวมข้อมูลทั้งหมด
         $grandTotal, // ใช้ grandTotal ที่รวมค่าจัดส่งแล้ว
         $paymentMethod
     ];

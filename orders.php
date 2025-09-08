@@ -51,13 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order'])) {
 // ดึงรายการคำสั่งซื้อทั้งหมด
 $orders_query = "
     SELECT o.*, 
-           COUNT(oi.id) as item_count,
-           SUM(oi.quantity * oi.price) as total_amount
+           COUNT(od.id) as item_count,
+           SUM(od.quantity * od.price) as total_amount
     FROM orders o
-    LEFT JOIN order_items oi ON o.id = oi.order_id
+    LEFT JOIN order_details od ON o.id = od.order_id
     WHERE o.user_id = $1
-    GROUP BY o.id
-    ORDER BY o.created_at DESC
+    GROUP BY o.id, o.user_id, o.fullname, o.tel, o.email, o.address, o.grand_total, 
+             o.payment_method, o.payment_status, o.order_date, o.status, o.created_at, o.updated_at
+    ORDER BY o.order_date DESC
 ";
 
 $orders_result = pg_query_params($conn, $orders_query, [$user_id]);
@@ -67,10 +68,10 @@ if ($orders_result) {
     while ($order = pg_fetch_assoc($orders_result)) {
         // ดึงรายละเอียดสินค้าในคำสั่งซื้อ
         $items_query = "
-            SELECT oi.*, p.name as product_name, p.image_url
-            FROM order_items oi
-            JOIN products p ON oi.product_id = p.id
-            WHERE oi.order_id = $1
+            SELECT od.*, p.name as product_name, p.image_url
+            FROM order_details od
+            LEFT JOIN products p ON od.product_id = p.id
+            WHERE od.order_id = $1
         ";
         $items_result = pg_query_params($conn, $items_query, [$order['id']]);
         $order['items'] = [];
@@ -265,12 +266,22 @@ function getStatusBadge($status) {
             border-radius: var(--makro-radius-sm);
             overflow: hidden;
             flex-shrink: 0;
+            background: var(--makro-light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--makro-border);
         }
 
         .item-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .item-image img:hover {
+            transform: scale(1.05);
         }
 
         .item-details {
@@ -450,13 +461,32 @@ function getStatusBadge($status) {
                     <?php foreach ($order['items'] as $item): ?>
                         <div class="item-card">
                             <div class="item-image">
-                                <?php if (!empty($item['image_url'])): ?>
-                                    <img src="upload_image/<?php echo htmlspecialchars($item['image_url']); ?>" 
-                                         alt="<?php echo htmlspecialchars($item['product_name']); ?>">
-                                <?php else: ?>
-                                    <img src="https://placehold.co/60x60/cccccc/333333?text=No+Image" 
-                                         alt="No Image">
-                                <?php endif; ?>
+                                <?php 
+                                $image_path = '';
+                                if (!empty($item['image_url'])) {
+                                    // ตรวจสอบว่าเป็น data URI (base64) หรือไม่
+                                    if (strpos($item['image_url'], 'data:') === 0) {
+                                        $image_path = $item['image_url'];
+                                    }
+                                    // ตรวจสอบว่าเป็น URL ภายนอกหรือไม่
+                                    elseif (filter_var($item['image_url'], FILTER_VALIDATE_URL)) {
+                                        $image_path = $item['image_url'];
+                                    } 
+                                    // ตรวจสอบว่าเป็น placeholder หรือไม่
+                                    elseif (strpos($item['image_url'], '[1]') !== false) {
+                                        $image_path = 'https://placehold.co/60x60/cccccc/333333?text=Image';
+                                    } 
+                                    // ถ้าเป็นชื่อไฟล์ปกติ
+                                    else {
+                                        $image_path = 'upload_image/' . htmlspecialchars($item['image_url']);
+                                    }
+                                } else {
+                                    $image_path = 'https://placehold.co/60x60/cccccc/333333?text=No+Image';
+                                }
+                                ?>
+                                <img src="<?php echo $image_path; ?>" 
+                                     alt="<?php echo htmlspecialchars($item['product_name']); ?>"
+                                     class="product-image">
                             </div>
                             
                             <div class="item-details">
