@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: zapshop
+    env: php
+    plan: free
+    buildCommand: ""
+    startCommand: php -S 0.0.0.0:$PORT
+    envVars:
+      - key: PHP_VERSION
+        value: 8.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zapstock_db
+          property: connectionString
+    healthCheckPath: /index.php
+
+databases:
+  - name: zapstock_db
+    plan: free
+    databaseName: zapstock_db
+    user: zapstock_user

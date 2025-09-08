@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /zap_shop/
+
+# อนุญาตให้เข้าถึงโฟลเดอร์ต่างๆ
+<Files "upload_image/*">
+    Require all granted
+</Files>
+
+<Files "uploads/*">
+    Require all granted
+</Files>
+
+<Files "cache/*">
+    Require all granted
+</Files>
+

@@ -1,0 +1,32 @@
+{
+    "name": "zapshop/ecommerce",
+    "description": "ZapShop E-commerce Platform",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ZapShop Development Team",
+            "email": "dev@zapshop.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "ZapShop\\": "src/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [],
+        "post-update-cmd": []
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

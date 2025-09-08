@@ -1,0 +1,496 @@
+/* ========================================
+   ZapShop Button System
+   Beautiful Button Layouts & Patterns
+   ======================================== */
+
+/* ===== BUTTON LAYOUT PATTERNS ===== */
+
+/* Primary Action Button Group */
+.btn-group-primary {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-group-primary .btn {
+    min-width: 140px;
+    height: 48px;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.5px;
+}
+
+/* Secondary Action Button Group */
+.btn-group-secondary {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.btn-group-secondary .btn {
+    min-width: 120px;
+    height: 40px;
+    font-size: var(--font-size-sm);
+}
+
+/* Card Action Buttons */
+.card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.card-actions .btn {
+    flex: 1;
+    height: 44px;
+    font-weight: var(--font-weight-medium);
+}
+
+/* Hero Section Buttons */
+.hero-buttons {
+    display: flex;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--spacing-2xl);
+}
+
+.hero-buttons .btn {
+    min-width: 180px;
+    height: 56px;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Search Section Buttons */
+.search-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+}
+
+.search-actions .btn {
+    min-width: 120px;
+    height: 44px;
+}
+
+/* Product Action Buttons */
+.product-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.product-actions .btn {
+    height: 44px;
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--border-radius-lg);
+}
+
+/* Category Action Buttons */
+.category-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+}
+
+.category-actions .btn {
+    min-width: 100px;
+    height: 36px;
+    font-size: var(--font-size-sm);
+}
+
+/* ===== SPECIAL BUTTON STYLES ===== */
+
+/* Floating Action Button */
+.btn-float {
+    position: fixed;
+    bottom: var(--spacing-2xl);
+    right: var(--spacing-2xl);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    border: none;
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-fixed);
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+}
+
+.btn-float:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: var(--shadow-2xl);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+}
+
+/* Icon Button */
+.btn-icon-only {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-lg);
+}
+
+.btn-icon-only.btn-sm {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-base);
+}
+
+.btn-icon-only.btn-lg {
+    width: 52px;
+    height: 52px;
+    font-size: var(--font-size-xl);
+}
+
+/* Outline Button with Hover Effect */
+.btn-outline-hover {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-outline-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-color);
+    transition: left var(--transition-normal);
+    z-index: -1;
+}
+
+.btn-outline-hover:hover::before {
+    left: 0;
+}
+
+.btn-outline-hover:hover {
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Gradient Button */
+.btn-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: none;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.btn-gradient:hover::before {
+    opacity: 1;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* ===== BUTTON STATES ===== */
+
+/* Loading State */
+.btn-loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Success State */
+.btn-success-state {
+    background: var(--success-color);
+    color: var(--white);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Error State */
+.btn-error-state {
+    background: var(--danger-color);
+    color: var(--white);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ===== RESPONSIVE BUTTON LAYOUTS ===== */
+
+@media (max-width: 768px) {
+    /* Mobile Button Groups */
+    .btn-group-primary,
+    .btn-group-secondary {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group-primary .btn,
+    .btn-group-secondary .btn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    /* Mobile Hero Buttons */
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* Mobile Product Actions */
+    .product-actions {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    /* Mobile Search Actions */
+    .search-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .search-actions .btn {
+        width: 100%;
+    }
+    
+    /* Mobile Floating Button */
+    .btn-float {
+        bottom: var(--spacing-lg);
+        right: var(--spacing-lg);
+        width: 50px;
+        height: 50px;
+        font-size: var(--font-size-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    /* Small Mobile Adjustments */
+    .btn {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .hero-buttons .btn {
+        height: 48px;
+        font-size: var(--font-size-base);
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+}
+
+/* ===== BUTTON ANIMATIONS ===== */
+
+/* Pulse Animation */
+.btn-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(227, 24, 55, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(227, 24, 55, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(227, 24, 55, 0); }
+}
+
+/* Bounce Animation */
+.btn-bounce {
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* Slide In Animation */
+.btn-slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== BUTTON UTILITIES ===== */
+
+/* Button Sizes */
+.btn-tiny {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    height: 28px;
+    min-width: 60px;
+}
+
+.btn-small {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    height: 36px;
+    min-width: 80px;
+}
+
+.btn-medium {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    height: 44px;
+    min-width: 100px;
+}
+
+.btn-large {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-lg);
+    height: 52px;
+    min-width: 120px;
+}
+
+.btn-xlarge {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    font-size: var(--font-size-xl);
+    height: 60px;
+    min-width: 140px;
+}
+
+/* Button Widths */
+.btn-full {
+    width: 100%;
+}
+
+.btn-half {
+    width: 50%;
+}
+
+.btn-third {
+    width: 33.333%;
+}
+
+.btn-quarter {
+    width: 25%;
+}
+
+/* Button Positions */
+.btn-center {
+    margin: 0 auto;
+    display: block;
+}
+
+.btn-left {
+    margin-right: auto;
+}
+
+.btn-right {
+    margin-left: auto;
+}
+
+/* Button Spacing */
+.btn-spaced {
+    margin: var(--spacing-md);
+}
+
+.btn-spaced-sm {
+    margin: var(--spacing-sm);
+}
+
+.btn-spaced-lg {
+    margin: var(--spacing-lg);
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* Focus Styles */
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.25);
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .btn {
+        border-width: 2px;
+    }
+    
+    .btn-outline {
+        border-width: 3px;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .btn {
+        transition: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+    
+    .btn-pulse,
+    .btn-bounce {
+        animation: none;
+    }
+}

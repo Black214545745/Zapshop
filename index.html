@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าสินค้า | ชื่อร้านค้าของคุณ</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Shopping T</div>
+            <ul>
+                <!-- ลิงก์ไปยังหน้าหลัก -->
+                <li><a href="index.html">หน้าหลัก</a></li>
+                
+                <!-- ลิงก์สำหรับเข้าสู่ระบบและลงทะเบียนของผู้ใช้งานทั่วไป - จะเปิด Pop-up แยกกัน -->
+                <li><a href="#" id="openUserLoginPopup">เข้าสู่ระบบ</a></li>
+                <li><a href="#" id="openUserRegisterPopup">ลงทะเบียน</a></li>
+
+                <!-- เพิ่มเมนู 'เกี่ยวกับเรา' และ 'ติดต่อ' -->
+                <li><a href="about.php">เกี่ยวกับเรา</a></li>
+                <li><a href="contact.php">ติดต่อ</a></li>
+
+                <!-- เพิ่มเมนูสำหรับผู้ดูแลระบบ (Admin) - ลิงก์เข้าสู่ระบบ Admin จะเปิด Pop-up แยกต่างหาก -->
+                <!-- แดชบอร์ด Admin ถูกนำออกตามคำขอ -->
+                <li><a href="#" id="openAdminLoginPopup">เข้าสู่ระบบ Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="product-page-container">
+        <section class="product-detail-card">
+            <div class="product-image">
+                <!-- สามารถเปลี่ยน src เป็นรูปภาพสินค้าจริงของคุณ ตัวอย่างรูปภาพผลไม้หรือผัก -->
+                <img src="upload/1.jpg" alt="รูปภาพสินค้า">
+            </div>
+            <div class="product-info">
+                <h1 class="product-name">ผักผลไม้สดจากฟาร์ม</h1>
+                <p class="product-price">฿ 99.00</p>
+                <div class="product-description">
+                    <p>คัดสรรผักและผลไม้สดใหม่จากฟาร์มท้องถิ่น ส่งตรงถึงมือคุณทุกวัน เต็มเปี่ยมด้วยคุณค่าทางโภชนาการ ปลอดสารพิษ เพื่อสุขภาพที่ดีของทุกคนในครอบครัว</p>
+                    <ul>
+                        <li>คุณสมบัติที่ 1: สดใหม่ทุกวัน ส่งตรงจากสวน</li>
+                        <li>คุณสมบัติที่ 2: ปลอดสารเคมี ปลอดภัยต่อผู้บริโภค</li>
+                        <li>คุณสมบัติที่ 3: หลากหลายชนิดให้เลือกตามฤดูกาล</li>
+                    </ul>
+                    <p>เรามุ่งมั่นที่จะนำเสนอผลิตภัณฑ์คุณภาพสูงที่ผ่านการคัดสรรอย่างพิถีพิถัน เพื่อให้คุณมั่นใจในทุกคำที่บริโภค ความสดใหม่และคุณภาพคือหัวใจของบริการของเรา</p>
+                </div>
+                <div class="product-actions">
+                    <label for="quantity">จำนวน:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1">
+                    <button class="add-to-cart-btn">เพิ่มลงตะกร้า</button>
+                </div>
+                <div class="share-options">
+                    <p>แชร์สินค้า:</p>
+                    <!-- สามารถเพิ่มไอคอนโซเชียลมีเดียอื่นๆ ได้ -->
+                    <a href="#"><img src="https://placehold.co/30x30/0d6efd/ffffff?text=FB" alt="Share on Facebook"></a>
+                    <a href="#"><img src="https://placehold.co/30x30/6f42c1/ffffff?text=IG" alt="Share on Instagram"></a>
+                </div>
+            </div>
+        </section>
+
+            <section class="related-products">
+            <h2>สินค้าอื่น ๆ ที่คุณอาจสนใจ</h2>
+            <div class="product-grid">
+                <div class="product-item">
+                    <img src="upload/Screenshot 2025-07-16 131404.png" alt="สินค้าที่เกี่ยวข้อง 1">
+                    <h3>ไข่ไก่ออร์แกนิก</h3>
+                    <p>฿ 120.00</p>
+                    <a href="user-login.php"><button>ดูรายละเอียด</button></a>
+                </div>
+                <div class="product-item">
+                    <img src="upload/2.jpg" alt="สินค้าที่เกี่ยวข้อง 2">
+                    <h3>นมสดท้องถิ่น</h3>
+                    <p>฿ 65.00</p>
+                    <a href="user-login.php"><button>ดูรายละเอียด</button></a>
+                </div>
+                <div class="product-item">
+                    <img src="upload/d98ac065b4e651488dae85021dfe58dd.jpg" alt="สินค้าที่เกี่ยวข้อง 3">
+                    <h3>เบเกอรี่อบใหม่</h3>
+                    <p>฿ 80.00</p>
+                    <a href="user-login.php"><button>ดูรายละเอียด</button></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ชื่อร้านค้าของคุณ. สงวนลิขสิทธิ์.</p>
+    </footer>
+
+    <!-- POPUP CONTAINER สำหรับ User Login -->
+    <div id="userLoginPopup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h2>เข้าสู่ระบบ (ลูกค้า)</h2>
+            <form class="auth-form" action="user-login.php" method="POST">
+                <div class="form-group">
+                    <label for="user-login-username">ชื่อผู้ใช้:</label>
+                    <input type="text" id="user-login-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-login-password">รหัสผ่าน:</label>
+                    <input type="password" id="user-login-password" name="password" required>
+                </div>
+                <button type="submit" class="auth-submit-btn">เข้าสู่ระบบ</button>
+                <a href="#" class="forgot-password">ลืมรหัสผ่าน?</a>
+            </form>
+            <p class="text-center mt-3">ยังไม่มีบัญชี? <a href="#" id="openUserRegisterFromLogin">สมัครสมาชิก</a></p>
+        </div>
+    </div>
+
+    <!-- POPUP CONTAINER สำหรับ User Register -->
+    <div id="userRegisterPopup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h2>สมัครสมาชิก (ลูกค้า)</h2>
+            <form class="auth-form" action="user-register.php" method="POST">
+                <div class="form-group">
+                    <label for="user-register-username">ชื่อผู้ใช้:</label>
+                    <input type="text" id="user-register-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-register-email">อีเมล:</label>
+                    <input type="email" id="user-register-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-register-password">รหัสผ่าน:</label>
+                    <input type="password" id="user-register-password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-register-confirm-password">ยืนยันรหัสผ่าน:</label>
+                    <input type="password" id="user-register-confirm-password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="auth-submit-btn">สมัครสมาชิก</button>
+                <p class="text-center mt-3">มีบัญชีอยู่แล้ว? <a href="#" id="openUserLoginFromRegister">เข้าสู่ระบบ</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- POPUP CONTAINER สำหรับ Admin Login -->
+    <div id="adminLoginPopup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h2>เข้าสู่ระบบ (แอดมิน)</h2>
+            <form class="auth-form" action="admin-login.php" method="POST">
+                <div class="form-group">
+                    <label for="admin-login-username">ชื่อผู้ใช้แอดมิน:</label>
+                    <input type="text" id="admin-login-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-login-password">รหัสผ่านแอดมิน:</label>
+                    <input type="password" id="admin-login-password" name="password" required>
+                </div>
+                <button type="submit" class="auth-submit-btn">เข้าสู่ระบบแอดมิน</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

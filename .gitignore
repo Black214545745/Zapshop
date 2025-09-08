@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Cache
+cache/
+*.cache
+
+# Uploads (keep structure but ignore large files)
+upload_image/*.jpg
+upload_image/*.jpeg
+upload_image/*.png
+upload_image/*.gif
+!upload_image/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# PHP
+*.php~
+*.php.bak
+
+# Database
+*.sql
+*.db
+
+# Backup files
+*.bak
+*.backup

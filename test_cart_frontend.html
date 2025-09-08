@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบ Frontend Cart - ZapShop</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .cart-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px 120px 120px 100px;
+            gap: 20px;
+            align-items: center;
+            padding: 25px;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .cart-item:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .cart-item.removing {
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 0.3s ease;
+        }
+        .product-image-container {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        .product-price {
+            font-weight: 700;
+            color: #e31837;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .quantity-btn {
+            background: #e31837;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .quantity-btn:hover {
+            background: #c41230;
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+        }
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 6px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .quantity-input:focus {
+            outline: none;
+            border-color: #e31837;
+            box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+        }
+        .item-total {
+            font-weight: 700;
+            color: #e31837;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .remove-btn {
+            background: #e31837;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+        .remove-btn:hover {
+            background: #c41230;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+        }
+        .cart-total {
+            text-align: right;
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .test-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn-test {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-test-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-test-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-test-warning {
+            background: #ffc107;
+            color: black;
+        }
+        .btn-test:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-section">
+            <h1><i class="fas fa-shopping-cart"></i> ทดสอบ Frontend Cart System</h1>
+            <p>ทดสอบการทำงานของระบบตะกร้าสินค้าแบบ Frontend-first</p>
+            
+            <div class="test-info">
+                <h5><i class="fas fa-info-circle"></i> ข้อมูลการทดสอบ</h5>
+                <p><strong>วิธีการทดสอบ:</strong></p>
+                <ul>
+                    <li>กดปุ่ม <strong>+</strong> เพื่อเพิ่มจำนวนสินค้า</li>
+                    <li>กดปุ่ม <strong>-</strong> เพื่อลดจำนวนสินค้า</li>
+                    <li>พิมพ์จำนวนในช่อง input โดยตรง</li>
+                    <li>กดปุ่ม <strong>🗑️</strong> เพื่อลบสินค้า</li>
+                    <li>สังเกตการอัปเดตยอดรวมแบบ real-time</li>
+                </ul>
+            </div>
+            
+            <div class="test-buttons">
+                <button class="btn-test btn-test-primary" onclick="addTestItem()">
+                    <i class="fas fa-plus"></i> เพิ่มสินค้าทดสอบ
+                </button>
+                <button class="btn-test btn-test-success" onclick="resetCart()">
+                    <i class="fas fa-refresh"></i> รีเซ็ตตะกร้า
+                </button>
+                <button class="btn-test btn-test-warning" onclick="showCartData()">
+                    <i class="fas fa-eye"></i> ดูข้อมูลตะกร้า
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3><i class="fas fa-shopping-bag"></i> สินค้าในตะกร้า</h3>
+            
+            <div class="cart-item" style="background: #e9ecef; font-weight: bold;">
+                <div>รูปภาพ</div>
+                <div>สินค้า</div>
+                <div>ราคา</div>
+                <div>จำนวน</div>
+                <div>ยอดรวม</div>
+                <div>จัดการ</div>
+            </div>
+            
+            <div id="cart-items">
+                <!-- สินค้าทดสอบจะถูกเพิ่มที่นี่ -->
+            </div>
+            
+            <div class="cart-total" id="cart-total">
+                <strong>รวมทั้งหมด: ฿0.00</strong>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // ข้อมูลสินค้าทดสอบ
+    let testProducts = [
+        { id: 1, name: 'เสื้อยืด ZapShop', price: 250, image: 'https://placehold.co/70x70/cccccc/333333?text=Shirt' },
+        { id: 2, name: 'กางเกงยีนส์ ZapShop', price: 800, image: 'https://placehold.co/70x70/cccccc/333333?text=Jeans' },
+        { id: 3, name: 'รองเท้า ZapShop', price: 1200, image: 'https://placehold.co/70x70/cccccc/333333?text=Shoes' }
+    ];
+    
+    let cartData = {};
+    let nextProductId = 1;
+
+    // ฟังก์ชันเพิ่มสินค้าทดสอบ
+    function addTestItem() {
+        const product = testProducts[Math.floor(Math.random() * testProducts.length)];
+        const productId = nextProductId++;
+        
+        cartData[productId] = {
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        };
+        
+        renderCart();
+        showNotification(`เพิ่ม ${product.name} ลงในตะกร้าแล้ว`, 'success');
+    }
+
+    // ฟังก์ชันรีเซ็ตตะกร้า
+    function resetCart() {
+        cartData = {};
+        nextProductId = 1;
+        renderCart();
+        showNotification('รีเซ็ตตะกร้าแล้ว', 'info');
+    }
+
+    // ฟังก์ชันแสดงข้อมูลตะกร้า
+    function showCartData() {
+        console.log('Cart Data:', cartData);
+        showNotification('ดูข้อมูลตะกร้าใน Console (F12)', 'info');
+    }
+
+    // ฟังก์ชันแสดงตะกร้า
+    function renderCart() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        cartItemsContainer.innerHTML = '';
+        
+        Object.values(cartData).forEach(item => {
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <div>
+                    <div class="product-image-container">
+                        <img src="${item.image}" alt="${item.name}" class="product-image">
+                    </div>
+                </div>
+                <div>
+                    <div class="product-name">${item.name}</div>
+                </div>
+                <div class="product-price">฿${item.price.toLocaleString()}</div>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)" title="ลดจำนวน">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" class="quantity-input" value="${item.quantity}" 
+                           min="1" max="99" 
+                           onchange="handleQuantityChange(${item.id}, this)"
+                           oninput="this.value = Math.max(1, Math.min(99, parseInt(this.value) || 1))">
+                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)" title="เพิ่มจำนวน">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="item-total">฿${(item.price * item.quantity).toLocaleString()}</div>
+                <div>
+                    <button class="remove-btn" onclick="removeItem(${item.id})" title="ลบสินค้า">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            cartItemsContainer.appendChild(cartItem);
+        });
+        
+        updateCartTotal();
+    }
+
+    // ฟังก์ชันอัปเดตจำนวนสินค้า
+    function updateQuantity(productId, change) {
+        if (!cartData[productId]) return;
+        
+        const currentQty = cartData[productId].quantity;
+        const newQty = Math.max(1, currentQty + change);
+        
+        cartData[productId].quantity = newQty;
+        
+        // อัปเดต input
+        const quantityInput = document.querySelector(`input[onchange*="handleQuantityChange(${productId}"]`);
+        if (quantityInput) {
+            quantityInput.value = newQty;
+        }
+        
+        // อัปเดตยอดรวม
+        updateItemTotal(productId);
+        updateCartTotal();
+        
+        showNotification(`อัปเดตจำนวนสินค้าเป็น ${newQty} ชิ้นแล้ว`, 'success');
+    }
+
+    // ฟังก์ชันอัปเดตยอดรวมของรายการ
+    function updateItemTotal(productId) {
+        const item = cartData[productId];
+        if (!item) return;
+        
+        const total = item.price * item.quantity;
+        const quantityInput = document.querySelector(`input[onchange*="handleQuantityChange(${productId}"]`);
+        if (!quantityInput) return;
+        
+        const cartItem = quantityInput.closest('.cart-item');
+        const itemTotalElement = cartItem.querySelector('.item-total');
+        
+        if (itemTotalElement) {
+            itemTotalElement.textContent = `฿${total.toLocaleString()}`;
+        }
+    }
+
+    // ฟังก์ชันอัปเดตยอดรวมทั้งหมด
+    function updateCartTotal() {
+        let totalAmount = 0;
+        let totalItems = 0;
+        
+        Object.values(cartData).forEach(item => {
+            totalAmount += item.price * item.quantity;
+            totalItems += item.quantity;
+        });
+        
+        const totalElement = document.getElementById('cart-total');
+        totalElement.innerHTML = `<strong>รวมทั้งหมด: ฿${totalAmount.toLocaleString()}</strong>`;
+    }
+
+    // ฟังก์ชันลบสินค้า
+    function removeItem(productId) {
+        if (!cartData[productId]) return;
+        
+        if (confirm('คุณต้องการลบสินค้านี้ออกจากตะกร้าหรือไม่?')) {
+            const quantityInput = document.querySelector(`input[onchange*="handleQuantityChange(${productId}"]`);
+            if (!quantityInput) return;
+            
+            const cartItem = quantityInput.closest('.cart-item');
+            cartItem.classList.add('removing');
+            
+            setTimeout(() => {
+                delete cartData[productId];
+                renderCart();
+                showNotification('ลบสินค้าออกจากตะกร้าแล้ว', 'info');
+            }, 300);
+        }
+    }
+
+    // ฟังก์ชันจัดการการเปลี่ยนแปลง input โดยตรง
+    function handleQuantityChange(productId, inputElement) {
+        if (!cartData[productId]) return;
+        
+        const newQty = parseInt(inputElement.value, 10);
+        const maxStock = parseInt(inputElement.getAttribute('max'), 10);
+        
+        if (isNaN(newQty) || newQty < 1) {
+            inputElement.value = 1;
+            cartData[productId].quantity = 1;
+            showNotification('จำนวนสินค้าต้องมากกว่า 0', 'warning');
+            updateItemTotal(productId);
+            updateCartTotal();
+            return;
+        }
+        
+        if (newQty > maxStock) {
+            inputElement.value = maxStock;
+            cartData[productId].quantity = maxStock;
+            showNotification(`จำนวนสินค้าเกินสต็อกที่มี (สูงสุด ${maxStock} ชิ้น)`, 'warning');
+            updateItemTotal(productId);
+            updateCartTotal();
+            return;
+        }
+        
+        cartData[productId].quantity = newQty;
+        updateItemTotal(productId);
+        updateCartTotal();
+        showNotification(`อัปเดตจำนวนสินค้าเป็น ${newQty} ชิ้นแล้ว`, 'success');
+    }
+
+    // ฟังก์ชันแสดง notification
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show`;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        notification.style.minWidth = '300px';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+
+    // เริ่มต้น
+    document.addEventListener('DOMContentLoaded', function() {
+        showNotification('ระบบทดสอบ Frontend Cart พร้อมใช้งาน', 'success');
+    });
+    </script>
+</body>
+</html>
